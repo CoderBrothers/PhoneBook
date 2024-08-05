@@ -11,6 +11,12 @@
             {
                 Console.WriteLine(abonent.Name + " " + abonent.Tel);
             }
+            abonentList.RemoveAbonent("Bob", "0");
+            var test2 = abonentList.ShowAllAbonents();
+            foreach (var abonent in test2)
+            {
+                Console.WriteLine(abonent.Name + " " + abonent.Tel);
+            }
         }
     }
 }
