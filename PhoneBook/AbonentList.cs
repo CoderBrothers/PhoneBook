@@ -9,19 +9,21 @@ namespace PhoneBook
     public class AbonentList
     {
         private List<Abonent> _list;
+        public int Count => _list.Count;
+        public Action<string> LogMessage { get; set; } = message => Console.WriteLine(message);
         public AbonentList() 
         {
             _list = new List<Abonent>();
         }
+        //перенести проверку сеттера в сеттеры абонента
+        //заменить врайтлайн заменить на делегаты/события
         public void AddAbonent(Abonent ab)
         {
-            if (ab == null || string.IsNullOrWhiteSpace(ab.Name) || string.IsNullOrWhiteSpace(ab.Tel))
+            if (!_list.Contains(ab))
             {
-                Console.WriteLine("You are an idiot: Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
-                return;
+                _list.Add(ab);
+                LogMessage?.Invoke("Abonent added");
             }
-            _list.Add(ab);
-            Console.WriteLine("Abonent added");
         }
 
         public List<Abonent> ShowAllAbonents()
@@ -32,7 +34,7 @@ namespace PhoneBook
             }
             return _list;
         }
-
+        //вынети логику из ремув
         public void RemoveAbonent(string name, string tel)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(tel))

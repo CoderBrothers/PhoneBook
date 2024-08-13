@@ -4,6 +4,7 @@
     {
         static void Main(string[] args)
         {
+            //Мы умеем выводить абонента
             AbonentList abonentList = new AbonentList();
             abonentList.AddAbonent(new Abonent("Bob", "0"));
             abonentList.AddAbonent(new Abonent("Foo", "1"));
