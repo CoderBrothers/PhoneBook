@@ -9,9 +9,10 @@ namespace PhoneBook
     public class AbonentList
     {
         private List<Abonent> _list;
-        public int Count => _list.Count;
-        public Action<string> LogMessage { get; set; } = message => Console.WriteLine(message);
-        public AbonentList() 
+
+        public event MessageHandler OnMessage;
+
+        public AbonentList()
         {
             _list = new List<Abonent>();
         }
@@ -19,18 +20,20 @@ namespace PhoneBook
         //заменить врайтлайн заменить на делегаты/события
         public void AddAbonent(Abonent ab)
         {
-            if (!_list.Contains(ab))
+            if (ab == null || string.IsNullOrWhiteSpace(ab.Name) || string.IsNullOrWhiteSpace(ab.Tel))
             {
-                _list.Add(ab);
-                LogMessage?.Invoke("Abonent added");
+                OnMessage?.Invoke("You are an idiot: Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
+                return;
             }
+            _list.Add(ab);
+            OnMessage?.Invoke("Abonent added");
         }
 
         public List<Abonent> ShowAllAbonents()
         {
             if (_list.Count == 0)
             {
-                Console.WriteLine("No abonents in the list.");
+                OnMessage?.Invoke("No abonents in the list.");
             }
             return _list;
         }
@@ -39,7 +42,7 @@ namespace PhoneBook
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(tel))
             {
-                Console.WriteLine("You are an idiot: Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
+                OnMessage?.Invoke("You are an idiot: Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
                 return;
             }
 
@@ -47,11 +50,11 @@ namespace PhoneBook
             if (abonentToRemove != null)
             {
                 _list.Remove(abonentToRemove);
-                Console.WriteLine("Abonent removed");
+                OnMessage?.Invoke("Abonent removed");
             }
             else
             {
-                Console.WriteLine("Oops - Abonent not found.");
+                OnMessage?.Invoke("Oops - Abonent not found.");
             }
         }
 
@@ -59,7 +62,7 @@ namespace PhoneBook
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                Console.WriteLine("Oops - Name cannot be empty or contain only spaces.");
+                OnMessage?.Invoke("Oops - Name cannot be empty or contain only spaces.");
                 return;
             }
 
@@ -74,15 +77,15 @@ namespace PhoneBook
 
             if (foundAbonents.Count > 0)
             {
-                Console.WriteLine("Found Abonents:");
+                OnMessage?.Invoke("Found Abonents:");
                 foreach (Abonent ab in foundAbonents)
                 {
-                    Console.WriteLine($"{ab.Name} - {ab.Tel}");
+                    OnMessage?.Invoke($"{ab.Name} - {ab.Tel}");
                 }
             }
             else
             {
-                Console.WriteLine("No abonents found with that name.");
+                OnMessage?.Invoke("No abonents found with that name.");
             }
         }
     }
