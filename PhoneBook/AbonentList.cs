@@ -10,7 +10,7 @@ namespace PhoneBook
     {
         private List<Abonent> _list;
 
-        public event MessageHandler OnMessage;
+        public event Action<string> OnMessage;
 
         public AbonentList()
         {
