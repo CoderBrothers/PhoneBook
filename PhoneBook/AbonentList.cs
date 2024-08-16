@@ -46,10 +46,10 @@ namespace PhoneBook
                 return;
             }
 
-            Abonent abonentToRemove = _list.Find(ab => ab.Name == name && ab.Tel == tel);
-            if (abonentToRemove != null)
+            int indexToRemove = _list.FindIndex(ab => ab.Name == name && ab.Tel == tel);
+            if (indexToRemove >= 0)
             {
-                _list.Remove(abonentToRemove);
+                _list.RemoveAt(indexToRemove);
                 OnMessage?.Invoke("Abonent removed");
             }
             else
@@ -58,18 +58,18 @@ namespace PhoneBook
             }
         }
 
-        public void FindAbonentsByName(string name)
+        public List<Abonent> FindAbonentsByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 OnMessage?.Invoke("Oops - Name cannot be empty or contain only spaces.");
-                return;
+                return new List<Abonent>();
             }
 
             List<Abonent> foundAbonents = new List<Abonent>();
             foreach (Abonent ab in _list)
             {
-                if (ab.Name == name)
+                if (ab.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
                 {
                     foundAbonents.Add(ab);
                 }
@@ -87,6 +87,8 @@ namespace PhoneBook
             {
                 OnMessage?.Invoke("No abonents found with that name.");
             }
+
+            return foundAbonents;
         }
     }
 }
