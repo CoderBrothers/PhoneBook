@@ -10,6 +10,7 @@ namespace PhoneBook
     {
         private string _name = "Unknown";
         private string _tel;
+        public int Id { get; set; } 
         public string Name
         {
             get => _name;
@@ -30,7 +31,7 @@ namespace PhoneBook
         }
         public Abonent(string name, string tel) => (Name, Tel) = (name, tel);
 
-        public override string ToString() => $"{Name} {Tel}";
+        public override string ToString() => $"{Id}. {Name} {Tel}";
         public override bool Equals(object? obj)
         {
             if (obj is Abonent abonent)

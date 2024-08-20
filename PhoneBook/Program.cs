@@ -12,6 +12,7 @@ namespace PhoneBook
         static void Main(string[] args)
         {
             var abonentList = new AbonentList();
+            abonentList.OnMessage += Console.WriteLine;
             bool exit = false;
 
             while (!exit)
@@ -30,19 +31,19 @@ namespace PhoneBook
                         Console.WriteLine("Exit");
                         break;
                     case 1:
-                        Console.WriteLine("In progress");
+                        AddAbonent(abonentList);
                         break;
                     case 2:
-                        Console.WriteLine("In progress");
+                        RemoveAbonent(abonentList);
                         break;
                     case 3:
-                        Console.WriteLine("In progress");
+                        ShowAbonents(abonentList);
                         break;
                     case 4:
-                        Console.WriteLine("In progress");
+                        SearchAbonent(abonentList);
                         break;
                     case 5:
-                        Console.WriteLine("In progress");
+                        EditAbonent(abonentList);
                         break;
                     default:
                         Console.WriteLine("Incorrect input");
@@ -55,6 +56,65 @@ namespace PhoneBook
                     Console.ReadKey();
                 }
             }
+        }
+
+        static void AddAbonent(AbonentList abonentList)
+        {
+            Console.WriteLine("Enter name:");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("Enter phone number:");
+            string tel = Console.ReadLine();
+
+            var abonent = new Abonent(name, tel);
+            abonentList.AddAbonent(abonent);
+        }
+
+        static void RemoveAbonent(AbonentList abonentList)
+        {
+            Console.WriteLine("Enter name:");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("Enter phone number:");
+            string tel = Console.ReadLine();
+
+            abonentList.RemoveAbonent(name, tel);
+        }
+
+        static void ShowAbonents(AbonentList abonentList)
+        {
+            var abonents = abonentList.ShowAllAbonents();
+            if (abonents.Count > 0)
+            {
+                foreach (var abonent in abonents)
+                {
+                    Console.WriteLine(abonent);
+                }
+            }
+        }
+
+        static void SearchAbonent(AbonentList abonentList)
+        {
+            Console.WriteLine("Enter name to search:");
+            string name = Console.ReadLine();
+            abonentList.FindAbonentsByName(name);
+        }
+
+        static void EditAbonent(AbonentList abonentList)
+        {
+            Console.WriteLine("Enter the current name of the abonent you want to edit:");
+            string oldName = Console.ReadLine();
+
+            Console.WriteLine("Enter the current phone number of the abonent you want to edit:");
+            string oldTel = Console.ReadLine();
+
+            Console.WriteLine("Enter new name (leave empty to keep current):");
+            string newName = Console.ReadLine();
+
+            Console.WriteLine("Enter new phone number (leave empty to keep current):");
+            string newTel = Console.ReadLine();
+
+            abonentList.EditAbonent(oldName, oldTel, newName, newTel);
         }
     }
 }
