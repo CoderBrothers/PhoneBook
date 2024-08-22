@@ -47,7 +47,6 @@ namespace PhoneBook
                 OnMessage?.Invoke("You are an idiot: Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
                 return;
             }
-
             int indexToRemove = _list.FindIndex(ab => ab.Name == name && ab.Tel == tel);
             if (indexToRemove >= 0)
             {
@@ -63,32 +62,30 @@ namespace PhoneBook
 
         public List<Abonent> FindAbonentsByName(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name) || name.Length < 2 || string.IsNullOrWhiteSpace(name))
             {
                 OnMessage?.Invoke("Oops - Name cannot be empty or contain only spaces.");
+                OnMessage?.Invoke("Please enter at least 2 letters.");
                 return new List<Abonent>();
             }
+            name = name.ToLower();
 
-            List<Abonent> foundAbonents = new List<Abonent>();
-            foreach (Abonent ab in _list)
-            {
-                if (ab.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
-                {
-                    foundAbonents.Add(ab);
-                }
-            }
+            var foundAbonents = _list
+                .Where(ab => ab.Name.StartsWith(name, StringComparison.OrdinalIgnoreCase))
+                .OrderBy(ab => ab.Name)
+                .ToList();
 
             if (foundAbonents.Count > 0)
             {
-                OnMessage?.Invoke("Found Abonents:");
-                foreach (Abonent ab in foundAbonents)
+                Console.WriteLine("Found Abonents:");
+                foreach (var ab in foundAbonents)
                 {
-                    OnMessage?.Invoke($"{ab.Name} - {ab.Tel}");
+                    Console.WriteLine($"{ab.Name} - {ab.Tel}");
                 }
             }
             else
             {
-                OnMessage?.Invoke("No abonents found with that name.");
+                Console.WriteLine("No abonents found with that name.");
             }
 
             return foundAbonents;
@@ -120,6 +117,11 @@ namespace PhoneBook
             }
 
             OnMessage?.Invoke("Abonent details updated.");
+        }
+        public void SortAbonents()
+        {
+            _list = _list.OrderBy(ab => ab.Name).ToList();
+            Console.WriteLine("Abonents sorted alphabetically.");
         }
         private void ReassignIndexes()
         {
