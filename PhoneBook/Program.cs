@@ -24,12 +24,7 @@ namespace PhoneBook
                                   "4. Search abonent\n5. Edit abonent\n6. Sort abonents\n0. Exit\n\n");
 
                 var key = Console.ReadKey(intercept: true);
-                if (key.Key == ConsoleKey.Escape)
-                {
-                    continue;
-                }
-                var input = Console.ReadLine();
-                if (string.IsNullOrEmpty(input))
+                if (!char.IsDigit(key.KeyChar))
                 {
                     Console.WriteLine("\nIncorrect input. Please enter a valid option (0-6).");
                     Console.WriteLine("Press any key to return to the main menu...");
@@ -37,7 +32,9 @@ namespace PhoneBook
                     continue;
                 }
 
-                if (!int.TryParse(input, out int choice) || choice < 0 || choice > 6)
+                int choice = key.KeyChar - '0';
+
+                if (choice < 0 || choice > 6)
                 {
                     Console.WriteLine("\nIncorrect input. Please select a valid option (0-6).");
                     Console.WriteLine("Press any key to return to the main menu...");
@@ -85,14 +82,22 @@ namespace PhoneBook
         static void AddAbonent(AbonentList abonentList)
         {
             Console.Clear();
-            Console.WriteLine("Add new abonent (Press ESC to cancel):");
+            Console.WriteLine("Add new abonent:");
             Console.Write("Enter name: ");
-            string name = ReadInputWithEscape();
-            if (name == null) return;
+            string name = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                Console.WriteLine("Name cannot be empty.");
+                return;
+            }
 
             Console.Write("Enter phone: ");
-            string phone = ReadInputWithEscape();
-            if (phone == null) return;
+            string phone = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(phone))
+            {
+                Console.WriteLine("Phone cannot be empty.");
+                return;
+            }
 
             abonentList.AddAbonent(new Abonent(name, phone));
         }
@@ -100,56 +105,103 @@ namespace PhoneBook
         static void DeleteAbonent(AbonentList abonentList)
         {
             Console.Clear();
-            Console.WriteLine("Delete abonent (Press ESC to cancel):");
-            Console.Write("Enter name: ");
-            string nameToDelete = ReadInputWithEscape();
-            if (nameToDelete == null) return;
+            Console.Write("Enter name:");
+            string name = Console.ReadLine();
 
-            Console.Write("Enter phone: ");
-            string phoneToDelete = ReadInputWithEscape();
-            if (phoneToDelete == null) return;
+            Console.Write("Enter phone number:");
+            string tel = Console.ReadLine();
 
-            abonentList.RemoveAbonent(nameToDelete, phoneToDelete);
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(tel))
+            {
+                Console.WriteLine("Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
+                return;
+            }
+
+            int indexToRemove = abonentList.ShowAllAbonents().FindIndex(ab => ab.Name == name && ab.Tel == tel);
+            abonentList.RemoveAbonent(indexToRemove);
         }
 
         static void ShowAllAbonents(AbonentList abonentList)
         {
             Console.Clear();
-            Console.WriteLine("Show all abonents (Press ESC to return):");
-            abonentList.ShowAllAbonents();
+            Console.WriteLine("All abonents:");
+
+            var abonents = abonentList.ShowAllAbonents(); 
+            if (abonents.Count == 0)
+            {
+                Console.WriteLine("No abonents in the list.");
+                return;
+            }
+
+            foreach (var abonent in abonents)
+            {
+                Console.WriteLine(abonent.ToString()); 
+            }
         }
 
         static void FindAbonents(AbonentList abonentList)
         {
             Console.Clear();
-            Console.WriteLine("Find abonent by name (Press ESC to cancel):");
+            Console.WriteLine("Find abonent by name:");
             Console.Write("Enter the name: ");
-            string name = ReadInputWithEscape();
-            if (name == null) return;
-
-            abonentList.FindAbonentsByName(name);
+            string name = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(name) || name.Length < 2)
+            {
+                Console.WriteLine("Oops - Name cannot be empty or contain only spaces.");
+                Console.WriteLine("Please enter at least 2 letters.");
+                return;
+            }
+            name = name.ToLower();
+            var abonents = abonentList.FindAbonentsByName(name);
+            if (abonents.Count > 0)
+            {
+                Console.WriteLine("Found Abonents:");
+                foreach (var abonent in abonents)
+                {
+                    Console.WriteLine(abonent.ToString());
+                }
+            }
+            else
+            {
+                Console.WriteLine("No abonents found with that name.");
+            }
         }
+
         static void EditAbonent(AbonentList abonentList)
         {
             Console.Clear();
-            Console.WriteLine("Edit abonent (Press ESC to cancel):");
-            Console.Write("Enter old name: ");
-            string oldName = ReadInputWithEscape();
-            if (oldName == null) return;
+            Console.WriteLine("Enter the current name of the abonent you want to edit:");
+            string oldName = Console.ReadLine();
 
-            Console.Write("Enter old phone: ");
-            string oldPhone = ReadInputWithEscape();
-            if (oldPhone == null) return;
+            Console.WriteLine("Enter the current phone number of the abonent you want to edit:");
+            string oldTel = Console.ReadLine();
 
-            Console.Write("Enter new name: ");
-            string newName = ReadInputWithEscape();
-            if (newName == null) return;
+            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(oldTel))
+            {
+                Console.WriteLine("Old name and phone number cannot be empty or consist only of spaces.");
+                return;
+            }
 
-            Console.Write("Enter new phone: ");
-            string newPhone = ReadInputWithEscape();
-            if (newPhone == null) return;
+            int indexToEdit = abonentList.ShowAllAbonents().FindIndex(ab => ab.Name == oldName && ab.Tel == oldTel);
 
-            abonentList.EditAbonent(oldName, oldPhone, newName, newPhone);
+            if (indexToEdit < 0)
+            {
+                Console.WriteLine("Abonent not found.");
+                return;
+            }
+
+            Console.WriteLine("Enter new name (leave empty to keep current):");
+            string newName = Console.ReadLine();
+
+            Console.WriteLine("Enter new phone number (leave empty to keep current):");
+            string newTel = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(newName) || string.IsNullOrWhiteSpace(newTel))
+            {
+                Console.WriteLine("Subscriber cannot be empty, and name and phone number cannot be empty or consist only of spaces.");
+                return;
+            }
+
+            abonentList.EditAbonent(indexToEdit, newName, newTel);
         }
 
         static void SortAbonents(AbonentList abonentList)
@@ -158,34 +210,6 @@ namespace PhoneBook
             Console.WriteLine("Sort abonents alphabetically");
 
             abonentList.SortAbonents();
-        }
-
-        static string ReadInputWithEscape()
-        {
-            string input = "";
-            while (true)
-            {
-                var key = Console.ReadKey(intercept: true);
-                if (key.Key == ConsoleKey.Escape)
-                {
-                    return null;
-                }
-                if (key.Key == ConsoleKey.Enter)
-                {
-                    Console.WriteLine();
-                    return input;
-                }
-                if (key.Key == ConsoleKey.Backspace && input.Length > 0)
-                {
-                    input = input.Substring(0, input.Length - 1);
-                    Console.Write("\b \b");
-                }
-                else if (!char.IsControl(key.KeyChar))
-                {
-                    input += key.KeyChar;
-                    Console.Write(key.KeyChar);
-                }
-            }
         }
     }
 }
